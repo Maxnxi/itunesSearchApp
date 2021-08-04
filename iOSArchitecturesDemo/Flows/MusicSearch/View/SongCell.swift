@@ -62,20 +62,20 @@ class SongCell: UITableViewCell {
     }
     
     private func configureUI() {
+        self.addImageView()
         self.addTitleLabel()
         self.addSubtitleLabel()
-        self.addImageView()
     }
     
     private func addImageView() {
-        self.contentView.addSubview(self.imgeView)
+        self.contentView.addSubview(imgeView)
         NSLayoutConstraint.activate([
-            self.imgeView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 4.0),
-            self.imgeView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 12.0),
+            imgeView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 16.0),
+            //imgeView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 12.0),
             
             imgeView.widthAnchor.constraint(equalToConstant: 40.0),
             imgeView.heightAnchor.constraint(equalToConstant: 40.0),
-            imgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 4.0)
+            imgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 16.0)
             ])
     }
     
@@ -83,7 +83,7 @@ class SongCell: UITableViewCell {
         self.contentView.addSubview(self.titleLabel)
         NSLayoutConstraint.activate([
             self.titleLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 8.0),
-            self.titleLabel.leftAnchor.constraint(equalTo: self.imgeView.rightAnchor, constant: 12.0),
+            self.titleLabel.leftAnchor.constraint(equalTo: imgeView.rightAnchor, constant: 12.0),
             self.titleLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -40.0)
             ])
     }
@@ -92,7 +92,7 @@ class SongCell: UITableViewCell {
         self.contentView.addSubview(self.subtitleLabel)
         NSLayoutConstraint.activate([
             self.subtitleLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 4.0),
-            self.subtitleLabel.leftAnchor.constraint(equalTo: self.imgeView.rightAnchor, constant: 12.0),
+            self.subtitleLabel.leftAnchor.constraint(equalTo: imgeView.rightAnchor, constant: 12.0),
             self.subtitleLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -40.0)
             ])
     }

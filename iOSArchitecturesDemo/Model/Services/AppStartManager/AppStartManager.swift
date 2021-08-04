@@ -28,32 +28,33 @@ final class AppStartManager {
         
         appVC.navigationItem.title = "Search via iTunes"
         
-        let navAppVC = self.configuredNavigationController
-        let navMusicVC = self.configuredNavigationController
+        let navAppVC = configuredNavigationController()
+        let navMusicVC = configuredNavigationController()
  
         navAppVC.viewControllers = [appVC]
         navMusicVC.viewControllers = [musicVC]
         
         navAppVC.tabBarItem = Constants.appSearchTabBarItem
-        musicVC.tabBarItem = Constants.musicSearchTabBarItem
+        navMusicVC.tabBarItem = Constants.musicSearchTabBarItem
         
         let tabBar = UITabBarController()
         tabBar.viewControllers = [navAppVC, navMusicVC]
-        tabBar.tabBar.tintColor = .white
-        tabBar.tabBar.barTintColor = .black
+        tabBar.tabBar.unselectedItemTintColor = .white
+        tabBar.tabBar.tintColor = .cyan
+        tabBar.tabBar.barTintColor = .gray
         
         window?.rootViewController = tabBar
         window?.makeKeyAndVisible()
     }
     
-    private lazy var configuredNavigationController: UINavigationController = {
+    private func configuredNavigationController() -> UINavigationController {
         let navVC = UINavigationController()
         navVC.navigationBar.barTintColor = UIColor.varna
         navVC.navigationBar.isTranslucent = false
         navVC.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         navVC.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         return navVC
-    }()
+    }
     
    
 }
