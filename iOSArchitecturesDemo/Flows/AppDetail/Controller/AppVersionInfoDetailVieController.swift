@@ -9,7 +9,9 @@
 import UIKit
 
 class AppVersionInfoDetailVieController: UIViewController {
+    
     private let app: ITunesApp
+    
     private var appVersionInfoDetailView: AppVersionInfoDetailView {
         return self.view as! AppVersionInfoDetailView
     }

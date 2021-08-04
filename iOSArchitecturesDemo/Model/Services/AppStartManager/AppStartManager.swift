@@ -10,6 +10,11 @@ import UIKit
 
 final class AppStartManager {
     
+    private enum Constants {
+        static let appSearchTabBarItem = UITabBarItem(title: "App", image: nil, selectedImage: nil)
+        static let musicSearchTabBarItem = UITabBarItem(title: "Music", image: nil, selectedImage: nil)
+    }
+    
     var window: UIWindow?
     
     init(window: UIWindow?) {
@@ -17,13 +22,27 @@ final class AppStartManager {
     }
     
     func start() {
-        let rootVC = SearchBuilder.build()//SearchViewController(presenter: <#SearchViewOutput#>)
-        rootVC.navigationItem.title = "Search via iTunes"
+        let appVC = SearchBuilder.build()
+        //SearchViewController(presenter: SearchViewOutput)
+        let musicVC = MusicSearchBuilder.build()
         
-        let navVC = self.configuredNavigationController
-        navVC.viewControllers = [rootVC]
+        appVC.navigationItem.title = "Search via iTunes"
         
-        window?.rootViewController = navVC
+        let navAppVC = self.configuredNavigationController
+        let navMusicVC = self.configuredNavigationController
+ 
+        navAppVC.viewControllers = [appVC]
+        navMusicVC.viewControllers = [musicVC]
+        
+        navAppVC.tabBarItem = Constants.appSearchTabBarItem
+        musicVC.tabBarItem = Constants.musicSearchTabBarItem
+        
+        let tabBar = UITabBarController()
+        tabBar.viewControllers = [navAppVC, navMusicVC]
+        tabBar.tabBar.tintColor = .white
+        tabBar.tabBar.barTintColor = .black
+        
+        window?.rootViewController = tabBar
         window?.makeKeyAndVisible()
     }
     
@@ -35,4 +54,6 @@ final class AppStartManager {
         navVC.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         return navVC
     }()
+    
+   
 }

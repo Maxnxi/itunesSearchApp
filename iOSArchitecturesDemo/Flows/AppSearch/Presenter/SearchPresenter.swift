@@ -10,7 +10,6 @@ import UIKit
 
 protocol SearchViewInput: AnyObject {
     var searchResults: [ITunesApp] { get set }
-    
     func showError(error: Error)
     func showNoResults()
     func hideNoResults()

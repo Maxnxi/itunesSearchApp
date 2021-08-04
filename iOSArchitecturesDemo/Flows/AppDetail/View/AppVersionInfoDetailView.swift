@@ -64,7 +64,7 @@ class AppVersionInfoDetailView: UIView {
         addSubview(descriptionLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20.0),
+            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20.0),
             titleLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
             
             versionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12.0),
@@ -76,7 +76,8 @@ class AppVersionInfoDetailView: UIView {
             
             descriptionLabel.topAnchor.constraint(equalTo: versionLabel.bottomAnchor, constant: 16.0),
             descriptionLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
-            descriptionLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20.0)
+            descriptionLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20.0),
+            descriptionLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -20.0)
         ])
     }
 }

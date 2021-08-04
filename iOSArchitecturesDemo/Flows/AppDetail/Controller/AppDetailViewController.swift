@@ -16,6 +16,8 @@ final class AppDetailViewController: UIViewController {
     
     lazy var headerDetailViewController = AppDetailHeaderViewController(app: app)
     lazy var versionInfoViewController = AppVersionInfoDetailVieController(app: app)
+    lazy var screenShotsVC = AppScreenShotsVC(app: app)
+    
     
     private var appDetailView: AppDetailView {
         return self.view as! AppDetailView
@@ -52,9 +54,10 @@ final class AppDetailViewController: UIViewController {
         view.backgroundColor = .white
         navigationController?.navigationBar.tintColor = .white
         navigationItem.largeTitleDisplayMode = .never
-        
+ 
         addHeaderViewController()
         addDescriptionViewController()
+        addScreenshotsVC()
     }
     
     private func addHeaderViewController() {
@@ -85,11 +88,36 @@ final class AppDetailViewController: UIViewController {
         versionInfoView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            versionInfoView.topAnchor.constraint(equalTo: headerDetailViewController.view.bottomAnchor, constant: 200.0),
+            versionInfoView.topAnchor.constraint(equalTo: headerDetailViewController.view.bottomAnchor, constant: 10.0),
             versionInfoView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
             versionInfoView.rightAnchor.constraint(equalTo: self.view.rightAnchor)
         ])
         
+    }
+    
+    private func addScreenshotsVC() {
+        self.view.addSubview(screenShotsVC.view)
+        self.addChild(screenShotsVC)
+        screenShotsVC.didMove(toParent: self)
+        
+        guard let screenshotsView = screenShotsVC.view else { return }
+        screenshotsView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            screenshotsView.topAnchor.constraint(equalTo: versionInfoViewController.view.bottomAnchor),
+            screenshotsView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            screenshotsView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            screenshotsView.heightAnchor.constraint(equalToConstant: 220)
+        ])
+    }
+    
+    @objc func didTapOnSelectorMusic(sender: Any?) {
+        print("Tapped Selector")
+    }
+    
+    @objc func didTapOnScreenshot(sender: Any?) {
+        let indexToPresent = screenShotsVC.selectedIndex
+        let fullScreenVC = AppDetailFullScreenShotVC(app: app, indexToStart: indexToPresent)
+        present(fullScreenVC, animated: true, completion: nil)
     }
     
 //    private func configureNavigationController() {

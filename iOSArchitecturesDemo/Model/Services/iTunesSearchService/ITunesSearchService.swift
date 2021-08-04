@@ -38,22 +38,16 @@ final class ITunesSearchService {
         parameters[Parameter.mediaType] = MediaType.apps.rawValue
         
         let request = WebRequest(method: .get, url: baseUrl, parameters: parameters)
-        print("//-------------//", request)
-        
         networkManager.dataRequest(request) { [weak self] result in
             guard let self = self else {
                 completion?(.success([]))
                 return
             }
-            
             result
                 .withValue { data in
-                    
                     do {
                         let result = try self.decoder.decode(ITunesSearchResult<ITunesApp>.self, from: data)
                         let apps = result.results
-                        print("//----------//")
-                        print("Info downloaded", apps.first)
                         completion?(.success(apps))
                     } catch {
                         print(error)

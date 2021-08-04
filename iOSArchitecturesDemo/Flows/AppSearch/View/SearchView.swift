@@ -12,6 +12,7 @@ final class SearchView: UIView {
     
     // MARK: - Subviews
     
+    let segmentedCntrl = UISegmentedControl(items: ["App", "Music"])
     let searchBar = UISearchBar()
     let tableView = UITableView()
     let emptyResultView = UIView()
@@ -33,10 +34,23 @@ final class SearchView: UIView {
     
     private func configureUI() {
         self.backgroundColor = .white
+        self.addSegmentCntrl()
         self.addSearchBar()
         self.addTableView()
         self.addEmptyResultView()
         self.setupConstraints()
+    }
+    
+    func addSegmentCntrl() {
+        self.segmentedCntrl.translatesAutoresizingMaskIntoConstraints = false
+        self.segmentedCntrl.selectedSegmentIndex = 0
+        self.segmentedCntrl.addTarget(self, action: #selector(segmentedValueChanged(_:)), for: .valueChanged)
+        self.addSubview(self.segmentedCntrl)
+        
+    }
+    @objc func segmentedValueChanged(_ sender:UISegmentedControl!) {
+        print("Segmented changed", sender.selectedSegmentIndex)
+        
     }
     
     private func addSearchBar() {
@@ -73,7 +87,11 @@ final class SearchView: UIView {
         let safeArea = self.safeAreaLayoutGuide
         
         NSLayoutConstraint.activate([
-            self.searchBar.topAnchor.constraint(equalTo: self.topAnchor, constant: 8.0),
+            self.segmentedCntrl.topAnchor.constraint(equalTo: self.topAnchor, constant: 0.0),
+            self.segmentedCntrl.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            //self.segmentedCntrl.widthAnchor.constraint(equalToConstant: self.bounds.size.width/2),
+            
+            self.searchBar.topAnchor.constraint(equalTo: segmentedCntrl.bottomAnchor, constant: 8.0),
             self.searchBar.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
             self.searchBar.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
             
