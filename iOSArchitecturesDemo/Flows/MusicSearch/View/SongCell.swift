@@ -30,6 +30,8 @@ class SongCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 10.0
         imageView.layer.masksToBounds = true
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -48,10 +50,10 @@ class SongCell: UITableViewCell {
     
     // MARK: - Methods
     
-    func configure(with cellModel: SongCellModel) {
-        self.titleLabel.text = cellModel.title
-        self.subtitleLabel.text = cellModel.subtitle
-        self.imgeView.image = cellModel.artWorkImg
+    func configure(with cellModel: MusicCellModel) {
+        self.titleLabel.text = cellModel.trackName
+        self.subtitleLabel.text = cellModel.artistName
+        
     }
     
     // MARK: - UI
@@ -70,12 +72,12 @@ class SongCell: UITableViewCell {
     private func addImageView() {
         self.contentView.addSubview(imgeView)
         NSLayoutConstraint.activate([
-            imgeView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 16.0),
-            //imgeView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 12.0),
+            imgeView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 11.0),
+            imgeView.leftAnchor.constraint(equalTo: leftAnchor, constant: 16.0),
             
-            imgeView.widthAnchor.constraint(equalToConstant: 40.0),
-            imgeView.heightAnchor.constraint(equalToConstant: 40.0),
-            imgeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 16.0)
+            imgeView.widthAnchor.constraint(equalToConstant: 50.0),
+            imgeView.heightAnchor.constraint(equalToConstant: 50.0),
+            imgeView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -11.0)
             ])
     }
     

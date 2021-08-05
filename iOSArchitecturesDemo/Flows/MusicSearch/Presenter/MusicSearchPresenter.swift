@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol MusicSearchViewInput: AnyObject {
+protocol MusicSearchControllerInterface: AnyObject {
     var searchResults: [ITunesSong] { get set }
     func showError(error: Error)
     func showNoResults()
@@ -16,48 +16,63 @@ protocol MusicSearchViewInput: AnyObject {
     func throbber(show: Bool)
 }
 
-protocol MusicSearchViewOutput: AnyObject {
-    func viewDidSearch(with query: String)
-    func viewDidSelectSong(song: ITunesSong)
+protocol MusicSearchPresenterInterface: AnyObject {
+    func didSelectTrack(track: ITunesSong, allTracks: [ITunesSong])
+    func shouldSearchWith(query: String)
+    func loadImage(url: String?, completion: @escaping (Data?) -> Void)
 }
 
 class MusicSearchPresenter {
-    weak var viewInput: (UIViewController & MusicSearchViewInput)?
+    weak var controller: (UIViewController & MusicSearchControllerInterface)?
+    private let router: MusicSearchRouterInterface
+    private let interactor: MusicSearchInteractorInterface
     
-    private let searchService = ITunesSearchService()
+    init(interactor: MusicSearchInteractorInterface, router: MusicSearchRouterInterface) {
+      self.interactor = interactor
+      self.router = router
+    }
     
-    private func requestSong(with query: String) {
-        searchService.getSongs(forQuery: query) { [weak self] result in
+    private func requestSongs(with query: String) {
+        interactor.getSongs(forQuery: query) { [weak self] result in
             guard let self = self else { return }
-            self.viewInput?.throbber(show: false)
-            result.withValue { songs in
+            self.controller?.throbber(show: false)
+            switch result{
+            case let .success(songs):
                 guard !songs.isEmpty else {
-                    self.viewInput?.searchResults = []
-                    self.viewInput?.showNoResults()
+                    self.controller?.searchResults = []
                     return
                 }
-                self.viewInput?.hideNoResults()
-                self.viewInput?.searchResults = songs
-            }
-            .withError { self.viewInput?.showError(error: $0)
+                self.controller?.searchResults = songs
+                self.controller?.hideNoResults()
+            case let .failure(err):
+                self.controller?.showError(error: err)
             }
         }
     }
     
     private func openDetails(with song: ITunesSong) {
         let songDetaillViewController = SongDetailVC(song: song)
-        viewInput?.navigationController?.pushViewController(songDetaillViewController, animated: true)
+        controller?.navigationController?.pushViewController(songDetaillViewController, animated: true)
+    }
+    
+    
+    private func getImageFromUrl(url: String?, completion: @escaping (Data?) -> Void) {
+      interactor.loadImage(url: url, completion: completion)
     }
 }
 
-extension MusicSearchPresenter: MusicSearchViewOutput {
-    func viewDidSearch(with query: String) {
-        viewInput?.throbber(show: true)
-        requestSong(with: query)
+extension MusicSearchPresenter: MusicSearchPresenterInterface {
+    func didSelectTrack(track: ITunesSong, allTracks: [ITunesSong]) {
+        router.pushMusicPlayer(withTrack: track, allTracks: allTracks)
     }
     
-    func viewDidSelectSong(song: ITunesSong) {
-        openDetails(with: song)
+    func shouldSearchWith(query: String) {
+        controller?.throbber(show: true)
+        requestSongs(with: query)
+    }
+    
+    func loadImage(url: String?, completion: @escaping (Data?) -> Void) {
+        getImageFromUrl(url: url, completion: completion)
     }
     
     

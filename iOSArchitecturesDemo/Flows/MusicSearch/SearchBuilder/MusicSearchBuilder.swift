@@ -9,10 +9,13 @@
 import UIKit
 
 class MusicSearchBuilder {
-    static func build() -> (UIViewController & MusicSearchViewInput) {
-        let presenter = MusicSearchPresenter()
-        let viewController = MusicSearchViewController(presenter: presenter)
-        presenter.viewInput = viewController
-        return viewController
+    static func build() -> (UIViewController & MusicSearchControllerInterface) {
+        let interactor = MusicSearchInteractor()
+        let router = MusicSearchRouter()
+        let presenter = MusicSearchPresenter(interactor: interactor, router: router)
+        let controller = MusicSearchViewController(presenter: presenter)
+        presenter.controller = controller
+        router.controller = controller
+        return controller
     }
 }
