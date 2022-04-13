@@ -23,26 +23,4 @@ final class AppCellModelFactory {
     }
 }
 
-struct SongCellModel {
-    let title: String
-    let subtitle: String?
-    let artWorkImg: UIImage?
-}
 
-final class SongCellModelFactory {
-    
-    static func cellModel(from model: ITunesSong) -> SongCellModel {
-        var tmpImage = UIImage()
-        if let url = model.artwork {
-            ImageDownloader().getImage(fromUrl:url)  { image, _ in
-                if let img = image {
-                    tmpImage = img
-                }
-            }
-        }
-        
-        return SongCellModel(title: model.trackName,
-                             subtitle: model.artistName,
-                             artWorkImg: tmpImage)
-    }
-}

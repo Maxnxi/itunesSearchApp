@@ -10,24 +10,27 @@ import UIKit
 
 final class MusicSearchViewController: UIViewController {
    
-    private let presenter: MusicSearchViewOutput
+    private let presenter: MusicSearchPresenterInterface
+    private lazy var cellModelFactory = MusicCellModelFactory()
     
     private var musicSearchView: MusicSearchView {
         return self.view as! MusicSearchView
     }
     
-    private let searchService = ITunesSearchService()
+    //private let searchService = ITunesSearchService()
+    
     var searchResults = [ITunesSong]() {
         didSet {
             musicSearchView.tableView.isHidden = false
             musicSearchView.tableView.reloadData()
             musicSearchView.searchBar.resignFirstResponder()
+            print("Search results - setted")
         }
     }
     
     // MARK: - Lifecycle
     
-    init(presenter: MusicSearchViewOutput) {
+    init(presenter: MusicSearchPresenterInterface) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -44,6 +47,7 @@ final class MusicSearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = "Music Search"
         musicSearchView.searchBar.delegate = self
         musicSearchView.tableView.register(SongCell.self, forCellReuseIdentifier: "songCell")
         musicSearchView.tableView.delegate = self
@@ -65,17 +69,22 @@ extension MusicSearchViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dequeuedCell = tableView.dequeueReusableCell(withIdentifier: "songCell", for: indexPath)
-        guard let cell = dequeuedCell as? SongCell else {
-            return dequeuedCell
+       guard let cell = tableView.dequeueReusableCell(withIdentifier: "songCell") as? SongCell else {
+            return UITableViewCell()
         }
         let song = self.searchResults[indexPath.row]
         
-        let cellModel = SongCellModelFactory.cellModel(from: song)
+        let cellModel = MusicCellModelFactory().createSongCellModel(from: song)
+        presenter.loadImage(url: cellModel.artwork) { data in
+            guard let data = data else { return }
+            cell.imgeView.image = .init(data: data)
+        }
         cell.configure(with: cellModel)
         return cell
     }
 }
+
+
 
 //MARK: - UITableViewDelegate
 extension MusicSearchViewController: UITableViewDelegate {
@@ -83,9 +92,7 @@ extension MusicSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let song = searchResults[indexPath.row]
-        let songDetaillViewController = SongDetailVC(song: song)
-        songDetaillViewController.song = song
-        presenter.viewDidSelectSong(song: song)
+        presenter.didSelectTrack(track: song, allTracks: searchResults)
     }
 }
 
@@ -101,28 +108,34 @@ extension MusicSearchViewController: UISearchBarDelegate {
             searchBar.resignFirstResponder()
             return
         }
-        
-        presenter.viewDidSearch(with: query)
+        presenter.shouldSearchWith(query: query)
     }
 }
 
-extension MusicSearchViewController: MusicSearchViewInput {
-    func throbber(show: Bool) {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = show
-    }
-    
-    func showError(error: Error) {
-        let alert = UIAlertController(title: "Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
-        let actionOk = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-        alert.addAction(actionOk)
-        self.present(alert, animated: true, completion: nil)
-    }
-    
+
+// MARK: - Interface
+extension MusicSearchViewController: MusicSearchControllerInterface {
     func showNoResults() {
-        self.musicSearchView.emptyResultView.isHidden = false
+        musicSearchView.emptyResultView.isHidden = false
     }
     
     func hideNoResults() {
-        self.musicSearchView.emptyResultView.isHidden = true
+        musicSearchView.emptyResultView.isHidden = true
     }
+  
+  func showError(error: Error) {
+    let alert = UIAlertController(title: "Error",
+                                  message: "\(error.localizedDescription)",
+                                  preferredStyle: .alert)
+    let actionOk = UIAlertAction(title: "OK",
+                                 style: .cancel,
+                                 handler: nil)
+    alert.addAction(actionOk)
+    self.present(alert, animated: true, completion: nil)
+  }
+  
+  func throbber(show: Bool) {
+    UIApplication.shared.isNetworkActivityIndicatorVisible = show
+  }
+  
 }
